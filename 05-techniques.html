@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5. เทคนิคขั้นสูง — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html" class="active"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 5 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 5 · เทคนิคขั้นสูง</span>
+          <h1>เทคนิคที่ยกระดับความแม่นยำและป้องกันการตอบข้อมูลเท็จ</h1>
+          <p class="lead">
+            ระบบจริงเพิ่มอีก 9 ขั้นตอนรอบการค้นคืนพื้นฐาน เพื่อให้ได้คำตอบที่ตรงประเด็น มีลำดับความน่าเชื่อถือ
+            และ "กล้าปฏิเสธ" เมื่อไม่มีข้อมูลรองรับ
+          </p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">5.1</span>Pipeline เต็มรูปแบบ ณ เวลาที่ผู้ใช้ถามคำถาม</h2>
+          <p class="sub">ก่อนค้นข้อมูล — คัดกรองคำถามให้ตรงจุด</p>
+          <div class="flow">
+            <div class="flow-step"><div class="fnum">1</div><h4>Intent Router</h4><p>ดักทักทาย / คำถามนอกเรื่อง / ข้อมูลส่วนบุคคล ก่อนเข้า RAG</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">2</div><h4>Domain Router</h4><p>จัดคำถามเข้า 1 ใน 9 โดเมนสินค้าเกษตร</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">3</div><h4>Query Expansion</h4><p>แตกคำถาม 1 ข้อ เป็น 3 มุม (ต้นฉบับ + 2 คำถามย่อยที่โฟกัสกว่า)</p></div>
+          </div>
+
+          <p class="sub" style="margin-top:22px;">ค้นข้อมูล ประเมินความมั่นใจ และประกอบคำตอบ</p>
+          <div class="flow">
+            <div class="flow-step"><div class="fnum">4</div><h4>Parallel Retrieval</h4><p>ค้น pgvector แบบขนาน<span class="tag">Top-10 × 3 มุม</span></p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">5</div><h4>Rerank</h4><p>ให้คะแนนเพิ่มตามความใหม่และความน่าเชื่อถือของแหล่งที่มา</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">6</div><h4>Coverage Gating</h4><p>ประเมินว่าข้อมูลที่ค้นได้ "พอตอบ" หรือไม่</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">7</div><h4>Tool Router</h4><p>เรียก API ข้อมูลสดคู่ขนาน หากจำเป็น</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">8</div><h4>DeepSeek สร้างคำตอบ</h4><p>ประกอบคำตอบจากทุกบริบท พร้อมอ้างอิง</p></div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">5.2</span>Reranking — จัดลำดับความน่าเชื่อถือ ไม่ใช่แค่ความคล้าย</h2>
+          <p>หลังค้นด้วย Cosine Similarity แล้ว ระบบให้ "คะแนนเสริม" อีก 2 แบบ ก่อนเลือกอันดับสุดท้าย</p>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>🕒 Recency Bonus</h3>
+              <p>เอกสารที่ใหม่กว่าได้คะแนนเสริมสูงสุด <strong>+0.08</strong> (ภายใน 1 ปี) แล้วค่อยๆ ลดลงตามอายุเอกสาร</p>
+            </div>
+            <div class="mini-card">
+              <h3>🏛️ Authority Bonus</h3>
+              <p>เอกสารจากแหล่งทางการ เช่น สศก. กรมปศุสัตว์ กรมประมง หรือ NABC ได้คะแนนเสริม <strong>+0.04</strong></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">5.3</span>Coverage Gating — กลไกป้องกันการตอบข้อมูลเท็จ (Anti-Hallucination)</h2>
+          <p>
+            หลังจัดลำดับผลค้นแล้ว ระบบจะแบ่งความมั่นใจออกเป็น 3 ระดับ: <strong>เต็ม / บางส่วน / ไม่พบ</strong>
+            หากคะแนนสูงสุดต่ำกว่า <span class="badge-tech">0.52</span> และไม่มีข้อมูลสดช่วยเสริม
+            ระบบจะ <strong>ปฏิเสธตอบทันที โดยไม่เรียก LLM สร้างคำตอบ</strong> — ป้องกันการเดาคำตอบอย่างเด็ดขาด
+          </p>
+          <p class="sub" style="margin-top:14px;">ตัวอย่างจริงจากชุดทดสอบระบบ (evals/oae_eval.json)</p>
+          <div class="grid-3">
+            <div class="chat-ex">
+              <div class="bubble user"><span class="who">ผู้ใช้ถาม</span>ราคาบิตคอยน์วันนี้เท่าไหร่</div>
+              <div class="bubble bot refuse"><span class="who">ระบบตอบ</span>ข้อมูลที่มีเป็นเรื่องราคาข้าวและปาล์มน้ำมันเท่านั้น ไม่มีข้อมูลราคาบิตคอยน์</div>
+            </div>
+            <div class="chat-ex">
+              <div class="bubble user"><span class="who">ผู้ใช้ถาม</span>ราคายางพาราปี 2580 จะเป็นเท่าไหร่</div>
+              <div class="bubble bot refuse"><span class="who">ระบบตอบ</span>ไม่มีข้อมูลคาดการณ์ปี 2580 จึงไม่สามารถตอบคำถามนี้ได้</div>
+            </div>
+            <div class="chat-ex">
+              <div class="bubble user"><span class="who">ผู้ใช้ถาม</span>ภาวะเกษตร "จังหวัดสมมติบุรี" เป็นอย่างไร</div>
+              <div class="bubble bot refuse"><span class="who">ระบบตอบ</span>เอกสารไม่ครอบคลุมจังหวัดนี้ พร้อมแนะนำจังหวัดที่มีข้อมูลจริงแทน</div>
+            </div>
+          </div>
+          <div class="callout warn">
+            <h4>⚠️ ทำไมจุดนี้สำคัญที่สุด</h4>
+            <p>นี่คือความแตกต่างหลักระหว่าง "LLM ตอบเปล่าๆ" กับ "LLM + RAG ที่ออกแบบมาอย่างรอบคอบ" — ระบบทั่วไปมักตอบมั่วอย่างมั่นใจในกรณีเหล่านี้ แต่ระบบนี้เลือก "ไม่ตอบ" แทนการเดา</p>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">5.4</span>Tool-Calling — เมื่อ Chatbot กลายเป็น Agent</h2>
+          <p>
+            นอกจากค้นคลังความรู้แบบ RAG แล้ว DeepSeek ยังใช้ <strong>Function-Calling</strong> ตัดสินใจเองว่าควรเรียก API ภายนอกใดบ้าง
+            แล้วเรียกแบบขนาน (parallel) นำผลรวมเข้าบริบทก่อนตอบ — ทำให้ระบบตอบ "ราคาวันนี้" หรือ "สภาพอากาศตอนนี้" ได้ ซึ่งเอกสารนิ่งไม่มีทาง
+            มีข้อมูลทันเวลา
+          </p>
+          <div class="tag-row">
+            <span class="chip gold">NABC — ราคาสินค้าเกษตร</span>
+            <span class="chip gold">TMD — สภาพอากาศ</span>
+            <span class="chip gold">RID / DWR — แหล่งน้ำ</span>
+            <span class="chip gold">DOA — ศัตรูพืช</span>
+            <span class="chip gold">CKAN / ThingSpeak — ชุดข้อมูลเปิดอื่น ๆ</span>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">5.5</span>ควบคุมต้นทุนและประสบการณ์ผู้ใช้</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>💬 Response Style Budget</h3>
+              <p>โหมด <strong>กระชับ</strong> ใช้บริบท 30K / ตอบยาวสุด 768 token — โหมด <strong>ละเอียด</strong> ใช้บริบท 60K / ตอบยาวสุด 2048 token ปรับตามความต้องการผู้ใช้</p>
+            </div>
+            <div class="mini-card">
+              <h3>⚡ Streaming Response (SSE)</h3>
+              <p>คำตอบทยอยแสดงผลแบบเรียลไทม์ทีละคำ ผ่าน Server-Sent Events ลดความรู้สึก "รอ" ของผู้ใช้ระหว่างที่โมเดลกำลังประมวลผล</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="04-rag-pipeline.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">RAG Pipeline เจาะลึก</div>
+          </a>
+          <a class="pn-link next" href="06-evaluation.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">ผลการประเมินระบบ</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 5 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

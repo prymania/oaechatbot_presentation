@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2. Chatbot ทั่วไป vs LLM — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html" class="active"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 2 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 2 · แนวคิดพื้นฐาน</span>
+          <h1>Chatbot ทั่วไป กับ Chatbot ที่ขับเคลื่อนด้วย LLM ต่างกันอย่างไร</h1>
+          <p class="lead">
+            ก่อนเข้าสู่สถาปัตยกรรมของระบบจริง ควรเข้าใจก่อนว่าทำไม "Chatbot แบบเดิม" ถึงไม่พอสำหรับงานนี้
+            และทำไม "LLM เพียงอย่างเดียว" ก็ยังไม่พอเช่นกัน
+          </p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">2.1</span>Chatbot แบบดั้งเดิม (Rule-based / Intent-Slot)</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>⚙️ ทำงานอย่างไร</h3>
+              <ul>
+                <li>จับคู่คำถามกับ "intent" หรือคำสำคัญที่กำหนดไว้ล่วงหน้า</li>
+                <li>ตอบด้วยข้อความสำเร็จรูป (template) ที่เขียนไว้ตายตัว</li>
+                <li>มักใช้ decision tree หรือปุ่มกดเมนูเป็นหลัก</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <h3>🚧 ข้อจำกัด</h3>
+              <ul>
+                <li>ต้องเขียนสคริปต์คำถาม-คำตอบทุกคู่ล่วงหน้า</li>
+                <li>ผู้ใช้พิมพ์นอกแบบที่ตั้งไว้ → "ไม่เข้าใจคำถาม"</li>
+                <li>เพิ่มความรู้ใหม่ = ต้องแก้โค้ด/เพิ่ม intent ใหม่ทุกครั้ง</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">2.2</span>Chatbot ที่ขับเคลื่อนด้วย LLM (ยังไม่มี RAG)</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>✨ จุดแข็ง</h3>
+              <ul>
+                <li>เข้าใจภาษาธรรมชาติได้ยืดหยุ่น ไม่ต้องพิมพ์คำเป๊ะ</li>
+                <li>สร้างคำตอบใหม่ สรุป เปรียบเทียบ อธิบายเรื่องซับซ้อนได้</li>
+                <li>สนทนาต่อเนื่องเป็นบริบทได้ (conversation)</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <h3>⚠️ ความเสี่ยงถ้าใช้ "เปล่าๆ"</h3>
+              <ul>
+                <li>ความรู้ถูกฝังไว้ตอนฝึกโมเดลเท่านั้น ไม่รู้ข้อมูลภายในหน่วยงานหรือข้อมูลใหม่</li>
+                <li><strong>Hallucination</strong> — ตอบมั่วอย่างมั่นใจ เมื่อไม่รู้คำตอบจริง</li>
+                <li>ไม่มีแหล่งอ้างอิงให้ตรวจสอบย้อนกลับ</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">2.3</span>เปรียบเทียบโดยสรุป</h2>
+          <table class="compare">
+            <thead>
+              <tr><th>มิติ</th><th>Chatbot ทั่วไป (Rule-based)</th><th>Chatbot LLM (ไม่มี RAG)</th></tr>
+            </thead>
+            <tbody>
+              <tr><th>ความเข้าใจภาษา</th><td class="bad">ตายตัว ต้องพิมพ์ตรงคำ/กดปุ่มเมนู</td><td class="good">ยืดหยุ่น เข้าใจภาษาพูดได้หลากหลาย</td></tr>
+              <tr><th>แหล่งความรู้</th><td>สคริปต์ที่เขียนไว้ล่วงหน้าเท่านั้น</td><td>ความรู้ทั่วไปที่ฝึกมา (ไม่รวมข้อมูลภายในหน่วยงาน)</td></tr>
+              <tr><th>อัปเดตความรู้ใหม่</th><td class="bad">แก้โค้ด/เพิ่ม intent ทุกครั้ง</td><td class="bad">ต้องฝึกโมเดลใหม่ — ทำไม่ได้จริงระดับองค์กร</td></tr>
+              <tr><th>คำถามซับซ้อน/เปรียบเทียบ</th><td class="bad">ทำไม่ได้</td><td class="good">ทำได้ดี</td></tr>
+              <tr><th>ความเสี่ยงเมื่อไม่รู้คำตอบ</th><td>ตอบ "ไม่เข้าใจคำถาม"</td><td class="bad">เสี่ยง Hallucination — ตอบมั่วอย่างมั่นใจ</td></tr>
+              <tr><th>อ้างอิงแหล่งที่มา</th><td class="bad">ไม่มี</td><td class="bad">ไม่มี (เว้นแต่เสริมด้วย RAG)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">2.4</span>ทางออก: เติม "คลังความรู้" ให้ LLM ด้วย RAG</h2>
+          <p>
+            แนวคิดของ <strong>Retrieval-Augmented Generation (RAG)</strong> คือให้โมเดล "เปิดหนังสือค้นคำตอบก่อนตอบ"
+            แทนที่จะตอบจากความจำเพียงอย่างเดียว — เหมือนนักเรียนเปิดหนังสือหาคำตอบก่อนเขียนลงข้อสอบ
+          </p>
+          <figure class="figure">
+            <img src="images/RAG-architecture.png" alt="RAG Architecture" />
+            <figcaption><b>สถาปัตยกรรม RAG ทั่วไป</b>  — Data Sources → Chunking → Embeddings → Vector DB → LLM</figcaption>
+          </figure>
+
+
+          <div class="callout ok">
+            <h4>✅ ทำไม RAG ถึงตอบโจทย์</h4>
+            <p>
+              ไม่ต้อง fine-tune โมเดลใหม่ทุกครั้งที่มีเอกสารใหม่ · ตอบโดยอ้างอิงเอกสารจริงที่ตรวจสอบย้อนกลับได้ ·
+              อัปเดตความรู้ได้ทันทีเพียงแค่นำเอกสารใหม่เข้าคลังความรู้ · ลดความเสี่ยง Hallucination ได้อย่างมีนัยสำคัญ
+              — รายละเอียดเทคนิคจริงที่ใช้ในระบบ OAE Chatbot จะอยู่ในหัวข้อที่ 3–5
+            </p>
+          </div>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="01-problem.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">บริบทและปัญหา</div>
+          </a>
+          <a class="pn-link next" href="03-architecture.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">สถาปัตยกรรมระบบต้นแบบ</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 2 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

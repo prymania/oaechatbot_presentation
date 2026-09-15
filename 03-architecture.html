@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3. สถาปัตยกรรมระบบ — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html" class="active"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 3 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 3 · สถาปัตยกรรมระบบต้นแบบ</span>
+          <h1>สถาปัตยกรรมระบบ OAE Chatbot แบบเต็มระบบ</h1>
+          <p class="lead">
+            ระบบแบ่งเป็น 5 ชั้นการทำงาน ตั้งแต่ช่องทางผู้ใช้ไปจนถึงชั้นโมเดล AI
+            โดยแต่ละชั้นเลือกใช้เทคโนโลยีที่เหมาะกับงานเฉพาะด้าน
+          </p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">3.1</span>5 ชั้นของระบบ (Layered Architecture)</h2>
+          <div class="layers">
+            <div class="layer">
+              <div class="layer-label"><span class="dot"></span>ชั้นผู้ใช้งาน — Client</div>
+              <div class="layer-items">
+                <span class="chip">Web Chat (React 19 + TypeScript SPA)</span>
+                <span class="chip">LINE Bot</span>
+                <span class="chip">Admin Dashboard (ECharts)</span>
+              </div>
+            </div>
+            <div class="layer-arrow-down">↓</div>
+
+            <div class="layer">
+              <div class="layer-label"><span class="dot"></span>ชั้น API — FastAPI Backend</div>
+              <div class="layer-items">
+                <span class="chip navy">FastAPI</span>
+                <span class="chip navy">Auth (JWT / Guest Session)</span>
+                <span class="chip navy">Routers: chat · admin · line webhook</span>
+                <span class="chip navy">Streaming (SSE)</span>
+              </div>
+            </div>
+            <div class="layer-arrow-down">↓</div>
+
+            <div class="layer">
+              <div class="layer-label"><span class="dot"></span>ชั้นประสานงาน — Orchestration Services</div>
+              <div class="layer-items">
+                <span class="chip gold">Intent Router</span>
+                <span class="chip gold">Domain Router</span>
+                <span class="chip gold">RAG Service</span>
+                <span class="chip gold">Tool Router (Function-Calling)</span>
+              </div>
+            </div>
+            <div class="layer-arrow-down">↓</div>
+
+            <div class="layer">
+              <div class="layer-label"><span class="dot"></span>ชั้นข้อมูล — Knowledge &amp; Live Data</div>
+              <div class="layer-items">
+                <span class="chip">PostgreSQL + pgvector (คลังความรู้ 9 โดเมน)</span>
+                <span class="chip">NABC — ราคาสินค้าเกษตร</span>
+                <span class="chip">TMD — สภาพอากาศ</span>
+                <span class="chip">RID / DWR — แหล่งน้ำ</span>
+                <span class="chip">DOA — ศัตรูพืช</span>
+              </div>
+            </div>
+            <div class="layer-arrow-down">↓</div>
+
+            <div class="layer">
+              <div class="layer-label"><span class="dot"></span>ชั้นโมเดล AI — LLM &amp; Embedding</div>
+              <div class="layer-items">
+                <span class="chip navy">DeepSeek v4-flash — สร้างคำตอบ / ตัดสินใจเรียกเครื่องมือ</span>
+                <span class="chip navy">Ollama · bge-m3 — แปลงข้อความเป็นเวกเตอร์ (1024 มิติ)</span>
+                <span class="chip navy">Typhoon OCR — อ่านไฟล์ PDF สแกนภาษาไทย</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">3.2</span>สองเส้นทางหลักของระบบ</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>📥 เส้นทางนำเข้าความรู้ (Ingestion — ทำครั้งเดียวต่อเอกสาร)</h3>
+              <ul>
+                <li>เอกสาร PDF / Excel ต้นทาง</li>
+                <li>Typhoon OCR แปลงเป็นข้อความ</li>
+                <li>แบ่งเป็น Chunk (1,500 ตัวอักษร / overlap 200)</li>
+                <li>แปลงแต่ละ Chunk เป็นเวกเตอร์ด้วย bge-m3</li>
+                <li>บันทึกลง PostgreSQL + pgvector</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <h3>💬 เส้นทางตอบคำถาม (Query-time — ทุกครั้งที่ผู้ใช้ถาม)</h3>
+              <ul>
+                <li>ผู้ใช้พิมพ์คำถาม → Intent / Domain Router คัดกรองก่อน</li>
+                <li>RAG Service ค้นคืนความรู้ที่เกี่ยวข้อง</li>
+                <li>Tool Router เรียก API สดคู่ขนาน (ถ้าจำเป็น)</li>
+                <li>DeepSeek ประกอบคำตอบจากบริบททั้งหมด</li>
+                <li>ส่งคำตอบพร้อมแหล่งอ้างอิงกลับผู้ใช้</li>
+              </ul>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:6px;">รายละเอียดทั้งสองเส้นทางนี้จะขยายความแบบทีละขั้นตอนในหัวข้อที่ 4 — RAG Pipeline เจาะลึก</p>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="02-chatbot-vs-llm.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">Chatbot ทั่วไป vs LLM</div>
+          </a>
+          <a class="pn-link next" href="04-rag-pipeline.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">RAG Pipeline เจาะลึก</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 3 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>6. ผลการประเมิน — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html" class="active"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 6 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 6 · การประเมินระบบ</span>
+          <h1>ผลการประเมิน: ความแม่นยำของคำตอบ และประสิทธิภาพฐานข้อมูล</h1>
+          <p class="lead">ระบบผ่านการทดสอบทั้งเชิงคุณภาพ (คำตอบถูกต้องหรือไม่) และเชิงปริมาณ (ค้นข้อมูลเร็วและแม่นแค่ไหน)</p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">6.1</span>Accuracy Evaluation — ความถูกต้องของคำตอบ</h2>
+          <p>ชุดทดสอบอ้างอิงความถูกต้องกับ <strong>เอกสารต้นฉบับโดยตรงเท่านั้น</strong> ไม่ใช้คำตอบเก่าของแชทบอทเป็นเกณฑ์ตรวจสอบ</p>
+          <div class="stat-row" style="margin:16px 0 20px;">
+            <div class="stat"><div class="num">7/8</div><div class="lbl">ข้อทดสอบผ่าน</div></div>
+            <div class="stat"><div class="num gold">88%</div><div class="lbl">อัตราความแม่นยำรวม</div></div>
+            <div class="stat"><div class="num">3/3</div><div class="lbl">ผ่านทุกเคส "ปฏิเสธตอบ"<br/>เมื่อไม่มีข้อมูลรองรับ</div></div>
+            <div class="stat"><div class="num gold">0</div><div class="lbl">กรณีตอบข้อมูลเท็จ<br/>(Hallucination)</div></div>
+          </div>
+          <table class="compare">
+            <thead><tr><th>ชุดคำถามทดสอบ</th><th>ผลลัพธ์</th><th>คะแนนความคล้าย</th></tr></thead>
+            <tbody>
+              <tr><th>งบประมาณกระทรวงเกษตรฯ 2568 (รวม)</th><td class="good">ผ่าน</td><td>0.730</td></tr>
+              <tr><th>งบบุคลากร ปี 2568</th><td class="good">ผ่าน</td><td>0.712</td></tr>
+              <tr><th>งบดำเนินงาน ปี 2568</th><td class="good">ผ่าน</td><td>0.728</td></tr>
+              <tr><th>สัดส่วนงบรายจ่ายประจำ/ลงทุน</th><td class="good">ผ่าน</td><td>0.768</td></tr>
+              <tr><th>ภาวะเศรษฐกิจเกษตร จ.ราชบุรี ไตรมาส 1/2569</th><td class="bad">ไม่ผ่าน — รอตรวจทานตัวเลขกับเอกสารต้นฉบับ</td><td>0.727</td></tr>
+              <tr><th>คำถามนอกโดเมน (เช่น ราคาบิตคอยน์)</th><td class="good">ผ่าน — ปฏิเสธตอบถูกต้อง</td><td>0.590</td></tr>
+              <tr><th>คำถามอนาคตที่คาดการณ์ไม่ได้</th><td class="good">ผ่าน — ปฏิเสธตอบถูกต้อง</td><td>0.556</td></tr>
+              <tr><th>คำถามจังหวัดที่ไม่มีอยู่จริง</th><td class="good">ผ่าน — ปฏิเสธตอบถูกต้อง</td><td>0.576</td></tr>
+            </tbody>
+          </table>
+          <div class="callout info">
+            <h4>ℹ️ เกี่ยวกับข้อที่ไม่ผ่าน</h4>
+            <p>กรณีเดียวที่ไม่ผ่านเกิดจากตัวเลขที่ดึงมายังไม่ได้ตรวจทานกับเอกสารต้นฉบับ (pending human verify) ไม่ใช่การตอบข้อมูลเท็จ — ส่วนอีก 3 เคสที่ทดสอบการ "ปฏิเสธตอบ" เมื่อไม่มีข้อมูลรองรับ ระบบผ่านทั้งหมด ยืนยันว่ากลไกป้องกัน Hallucination ทำงานได้จริง</p>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">6.2</span>Benchmark เชิงปริมาณ — ทดสอบซ้ำระดับร้อยคำถาม</h2>
+          <p>ทดสอบ 3 โดเมนตัวแทน (กุ้ง โค ทุเรียน) ด้วยชุดคำถาม 50 ข้อ ทำซ้ำ 3 รอบต่อโดเมน รวม <strong>150 คำถามต่อโดเมน</strong> บันทึกบทสนทนาทั้งหมดเผยแพร่เป็นชุดผลลัพธ์ตรวจสอบย้อนหลังได้</p>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">6.3</span>เลือก Vector Database อย่างมีข้อมูลรองรับ</h2>
+          <p class="sub">ทดสอบบนข้อมูลจริง 24,811 chunks จาก 5 โดเมน เวกเตอร์ 1024 มิติ (bge-m3) เปรียบเทียบ 4 การตั้งค่า</p>
+          <div style="overflow-x:auto;">
+            <table class="data">
+              <thead>
+                <tr><th>ฐานข้อมูล</th><th>Recall@10</th><th>p50 (ms)</th><th>p95 (ms)</th><th>QPS</th><th>Index Time (s)</th><th>Disk (MB)</th></tr>
+              </thead>
+              <tbody>
+                <tr class="win"><td>pgvector — HNSW <em>(ที่เลือกใช้จริง)</em></td><td>0.999</td><td>14.1</td><td>25.0</td><td>819</td><td>103.3</td><td>519</td></tr>
+                <tr><td>pgvector — IVFFlat</td><td>0.989</td><td>12.4</td><td>25.2</td><td>721</td><td>35.5</td><td>790</td></tr>
+                <tr><td>Qdrant (gRPC)</td><td>0.998</td><td>4.6</td><td>5.8</td><td>549</td><td>13.0</td><td>163</td></tr>
+                <tr><td>ChromaDB</td><td>0.996</td><td>69.4</td><td>78.7</td><td>97</td><td>28.9</td><td>108</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout ok" style="margin-top:16px;">
+            <h4>✅ เหตุผลที่เลือก pgvector + HNSW</h4>
+            <p>ให้ค่า Recall@10 และ QPS (จำนวนคำขอต่อวินาที) สูงสุดในกลุ่ม และใช้ Postgres ตัวเดียวกับที่ระบบมีอยู่แล้ว — ไม่ต้องเพิ่มบริการใหม่ให้ดูแล แม้ Qdrant จะตอบเร็วกว่าต่อคำขอ (latency ต่ำกว่า ~4 เท่า) แต่ต้องแลกกับความซับซ้อนในการดูแลระบบเพิ่ม</p>
+          </div>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="05-techniques.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">เทคนิคขั้นสูงในระบบ</div>
+          </a>
+          <a class="pn-link next" href="07-deployment.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">การใช้งานจริงและ Deployment</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 6 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>7. การใช้งานจริงและ Deployment — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html" class="active"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 7 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 7 · การใช้งานจริง</span>
+          <h1>ช่องทางการใช้งาน และการติดตั้งระบบ (Deployment)</h1>
+          <p class="lead">ระบบต้นแบบให้บริการผ่าน 3 ช่องทาง และมีกระบวนการติดตั้ง/อัปเดตแบบอัตโนมัติเพื่อความเสถียร</p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">7.1</span>3 ช่องทางผู้ใช้งาน</h2>
+          <div class="grid-3">
+            <div class="mini-card">
+              <h3>🌐 Web Chat</h3>
+              <p>React 19 + TypeScript SPA พร้อม Markdown rendering และการ sanitize ป้องกัน XSS สำหรับคำตอบที่มีการจัดรูปแบบ</p>
+            </div>
+            <div class="mini-card">
+              <h3>💬 LINE Bot</h3>
+              <p>เชื่อมผ่าน LINE Messaging API Webhook — ใช้ช่องทางที่เกษตรกรและเจ้าหน้าที่คุ้นเคยอยู่แล้วในชีวิตประจำวัน</p>
+            </div>
+            <div class="mini-card">
+              <h3>📊 Admin Dashboard</h3>
+              <p>แดชบอร์ดผู้ดูแลระบบ แสดงสถิติการใช้งานและคุณภาพคำตอบด้วย ECharts พร้อมจัดการคลังความรู้</p>
+            </div>
+          </div>
+          <p class="sub" style="margin-top:14px;">ระบบยืนยันตัวตนรองรับทั้งผู้ใช้ลงทะเบียน (JWT + ยืนยันอีเมลด้วย OTP) และผู้ใช้ทั่วไปแบบไม่ต้องสมัคร (Guest Session)</p>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">7.2</span>สถาปัตยกรรมการติดตั้ง (Docker)</h2>
+          <div class="flow">
+            <div class="flow-step"><div class="fnum">1</div><h4>Multi-stage Build</h4><p>สร้าง Frontend (Node/Vite) และ Backend (Python) รวมในอิมเมจเดียว</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">2</div><h4>docker-compose (dev)</h4><p>App + PostgreSQL + Ollama พร้อมดึงโมเดล bge-m3 อัตโนมัติ</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">3</div><h4>docker-compose (prod)</h4><p>เพิ่ม Nginx เป็น Reverse Proxy หน้าระบบ</p></div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">7.3</span>สอง "หน้างาน" ที่ติดตั้งระบบจริง</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>☁️ Cloud VPS — อัปเดตอัตโนมัติผ่าน CI/CD</h3>
+              <ul>
+                <li>Push โค้ดเข้า branch <span class="badge-tech">prod</span></li>
+                <li>GitHub Actions build → push image ขึ้น GHCR</li>
+                <li>Deploy ตาม digest พร้อม Health Check</li>
+                <li>Rollback อัตโนมัติหากตรวจพบปัญหา</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <h3>🖥️ เครื่อง On-Prem ("nabc-llm")</h3>
+              <ul>
+                <li>ไม่ใช่ git tree — อัปเดตผ่านการอัปโหลดไฟล์โดยตรง</li>
+                <li>เหมาะสำหรับข้อมูลที่ต้องอยู่ภายในเครือข่ายหน่วยงาน</li>
+                <li>ควบคุมได้เต็มที่โดยไม่ต้องพึ่งอินเทอร์เน็ตภายนอก</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="06-evaluation.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">ผลการประเมินระบบ</div>
+          </a>
+          <a class="pn-link next" href="08-summary.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">สรุปและก้าวต่อไป</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 7 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

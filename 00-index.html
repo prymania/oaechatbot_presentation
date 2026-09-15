@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OAE Chatbot — เอกสารนำเสนอต้นแบบระบบ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+    <style>
+      .cover-hero {
+        background: linear-gradient(160deg, var(--gov-primary) 0%, var(--gov-primary-dk) 100%);
+        border-radius: 18px;
+        padding: clamp(28px, 5vw, 56px);
+        color: #eaf3ee;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 34px;
+      }
+      .cover-hero::after {
+        content: "";
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 85% 15%, rgba(180,131,37,0.25), transparent 55%);
+        pointer-events: none;
+      }
+      .cover-hero .kicker { background: rgba(180,131,37,0.2); border-color: rgba(223,198,139,0.5); color: #f6e3ba; }
+      .cover-hero h1 { font-size: clamp(28px, 4vw, 44px); color: #fff; font-weight: 700; line-height: 1.35; margin: 14px 0 12px; max-width: 22ch; }
+      .cover-hero .sub { font-size: 16.5px; color: #cfe4d9; max-width: 62ch; line-height: 1.7; }
+      .cover-meta { display: flex; gap: 28px; margin-top: 26px; flex-wrap: wrap; font-size: 13.5px; color: #bcd4c8; }
+      .cover-meta div b { display: block; color: #fff; font-size: 14.5px; margin-bottom: 2px; }
+      .agenda-list { list-style: none; counter-reset: agenda; }
+      .agenda-list li {
+        counter-increment: agenda;
+        display: flex; align-items: center; gap: 16px;
+        padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px;
+        background: var(--bg-card); margin-bottom: 10px;
+      }
+      .agenda-list li::before {
+        content: counter(agenda);
+        flex: none; width: 34px; height: 34px; border-radius: 9px;
+        background: var(--gov-primary-lt); color: var(--gov-primary);
+        font-family: var(--f-mono); font-weight: 700; font-size: 15px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .agenda-list .a-title { font-weight: 700; font-size: 14.5px; color: var(--text-main); }
+      .agenda-list .a-desc { font-size: 12.5px; color: var(--text-soft); margin-top: 2px; }
+      .agenda-list .a-time { margin-left: auto; flex: none; font-family: var(--f-mono); font-size: 12px; color: var(--gold-dk); background: var(--gold-lt); border: 1px solid var(--gold-bd); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">
+        เอกสารประกอบการนำเสนอ<br />
+        ระบบต้นแบบ OAE Chatbot · 8 หัวข้อ
+      </div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="cover-hero">
+          <span class="kicker">เอกสารนำเสนอต้นแบบระบบ · ระยะเวลา ~40 - 60 นาที</span>
+          <h1>จาก Chatbot ทั่วไป สู่ระบบ LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</h1>
+          <p class="sub">
+            สถาปัตยกรรมระบบต้นแบบ OAE Chatbot ที่เชื่อมโยง Large Language Model (LLM) เข้ากับเทคนิค
+            Retrieval-Augmented Generation (RAG) เพื่อตอบคำถามโดยอ้างอิงคลังความรู้จริง ครอบคลุม
+            9 โดเมนสินค้าเกษตร พร้อมกลไกป้องกันการตอบข้อมูลเท็จ (Hallucination)
+          </p>
+          <div class="cover-meta">
+            <div><b>ผู้นำเสนอ</b>[พรทิวา ปะวะระ]</div>
+            <div><b>หน่วยงาน</b>สำนักงานเศรษฐกิจการเกษตร (สศก.)</div>
+            <div><b>วันที่นำเสนอ</b>[21 กันยายน 2569]</div>
+            <div><b>ระยะเวลา</b>ประมาณ 40 - 60 นาที + ถาม-ตอบ</div>
+          </div>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">·</span>ภาพรวมตัวเลขสำคัญของระบบ</h2>
+          <div class="stat-row">
+            <div class="stat"><div class="num">9</div><div class="lbl">โดเมนสินค้าเกษตร</div></div>
+            <div class="stat"><div class="num gold">2</div><div class="lbl">ช่องทางผู้ใช้งาน<br/>Web · LINE</div></div>
+            <div class="stat"><div class="num">88%</div><div class="lbl">ผลการประเมินความแม่นยำ<br/>(Accuracy Eval)</div></div>
+            <div class="stat"><div class="num gold">0.999</div><div class="lbl">Recall@10 ของระบบค้นคืน<br/>(pgvector · HNSW)</div></div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">·</span>กำหนดการนำเสนอ (Agenda)</h2>
+          <p class="sub">แบ่งเป็น 8 หัวข้อ เรียงจากภาพกว้าง (ปัญหา/แนวคิด) ไปสู่รายละเอียดทางเทคนิค และปิดท้ายด้วยผลลัพธ์จริง</p>
+          <ul class="agenda-list">
+            <li><div><div class="a-title">บริบทและปัญหา</div><div class="a-desc">ทำไมต้องมี AI Chatbot ด้านเศรษฐกิจการเกษตร และ 9 โดเมนสินค้าที่ระบบครอบคลุม</div></div><div class="a-time">~5 นาที</div></li>
+            <li><div><div class="a-title">Chatbot ทั่วไป vs Chatbot ที่ใช้ LLM</div><div class="a-desc">ความแตกต่างเชิงแนวคิด และทำไม LLM อย่างเดียวยังไม่พอ</div></div><div class="a-time">~8 นาที</div></li>
+            <li><div><div class="a-title">สถาปัตยกรรมระบบต้นแบบ</div><div class="a-desc">ภาพรวมทุกชั้นของระบบ ตั้งแต่ผู้ใช้ถึงฐานข้อมูล</div></div><div class="a-time">~8 นาที</div></li>
+            <li><div><div class="a-title">RAG Pipeline เจาะลึก</div><div class="a-desc">จากไฟล์ PDF สู่ Vector Database และการค้นคืนคำตอบ</div></div><div class="a-time">~15 นาที</div></li>
+            <li><div><div class="a-title">เทคนิคขั้นสูงในระบบ</div><div class="a-desc">Query Expansion · Reranking · Coverage Gating · Tool-Calling</div></div><div class="a-time">~10 นาที</div></li>
+            <li><div><div class="a-title">ผลการประเมินระบบ</div><div class="a-desc">Accuracy Eval และผลเปรียบเทียบ Vector Database</div></div><div class="a-time">~6 นาที</div></li>
+            <li><div><div class="a-title">การใช้งานจริงและ Deployment</div><div class="a-desc">ช่องทางผู้ใช้ และการติดตั้งใช้งานระบบ</div></div><div class="a-time">~5 นาที</div></li>
+            <li><div><div class="a-title">สรุปและก้าวต่อไป</div><div class="a-desc">ประเด็นสำคัญ แนวทางพัฒนาต่อ และเปิดถาม-ตอบ</div></div><div class="a-time">~5 นาที + Q&amp;A</div></li>
+          </ul>
+        </section>
+
+        <div class="prevnext">
+          <div class="pn-spacer"></div>
+          <a class="pn-link next" href="01-problem.html">
+            <div class="pn-dir">เริ่มหัวข้อที่ 1</div>
+            <div class="pn-title">บริบทและปัญหา →</div>
+          </a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

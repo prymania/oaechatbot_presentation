@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4. RAG Pipeline เจาะลึก — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html" class="active"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 4 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 4 · หัวใจของระบบ</span>
+          <h1>RAG Pipeline เจาะลึก: จากเอกสาร PDF สู่คำตอบที่มีแหล่งอ้างอิง</h1>
+          <p class="lead">แบ่งเป็น 2 ช่วงเวลา — "นำเข้าความรู้" ทำครั้งเดียวต่อเอกสาร และ "ค้นคืนคำตอบ" ทำทุกครั้งที่มีผู้ใช้ถามคำถาม</p>
+        </div>
+
+                  <figure class="figure">
+                    <img src="images/RAG-architecture.png" alt="RAG Architecture" />
+                    <figcaption><b>สถาปัตยกรรม RAG ทั่วไป</b> — Data Sources → Chunking → Embeddings → Vector DB → LLM</figcaption>
+                  </figure>
+                  
+        <section class="block">
+          <h2><span class="h2num">4.1</span>ช่วงที่ 1 — นำเข้าความรู้ (Data Ingestion)</h2>
+          <div class="flow">
+            <div class="flow-step"><div class="fnum">1</div><h4>ไฟล์ PDF</h4><p>คู่มือ ข้อมูลวิชาการ รายงาน เอกสารในหน่วยงาน</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">2</div><h4>Typhoon OCR</h4><p>แปลง PDF (ไทย/อังกฤษ) เป็นข้อความ รองรับเอกสารสแกน</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">3</div><h4>Chunking</h4><p>แบ่งข้อความเป็นส่วนย่อย<span class="tag">1,500 ตัวอักษร / overlap 200</span></p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">4</div><h4>Embedding</h4><p>แปลงแต่ละ Chunk เป็นเวกเตอร์ด้วย bge-m3<span class="tag">1024 มิติ</span></p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">5</div><h4>บันทึกฐานข้อมูล</h4><p>เก็บเวกเตอร์ + ข้อความต้นฉบับ + แหล่งที่มา<span class="tag">PostgreSQL + pgvector</span></p></div>
+          </div>
+
+          <figure class="figure" style="margin-top:18px;">
+            <img src="images/pdf%20to%20database.png" alt="ขั้นตอนการนำเข้าข้อมูลจากไฟล์ PDF สู่ Vector Database ของระบบ OAE Chatbot" />
+            <figcaption><b>ขั้นตอนจริงของระบบ</b> — จากไฟล์ PDF สู่ฐานข้อมูลเวกเตอร์ (PostgreSQL + pgvector)</figcaption>
+          </figure>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">4.2</span>ช่วงที่ 2 — ค้นคืนคำตอบ (Retrieval ณ เวลาถาม)</h2>
+          <p>เมื่อผู้ใช้ถามคำถาม ระบบจะแปลงคำถามเป็นเวกเตอร์ แล้วค้นหาข้อมูลที่ "ใกล้เคียงความหมาย" ที่สุดจากคลังความรู้ ก่อนส่งให้ LLM สร้างคำตอบ</p>
+          <figure class="figure">
+            <img src="images/retriveDataFromDatabase.png" alt="ขั้นตอนการดึงข้อมูลจากฐานข้อมูลด้วย Vector, Cosine Similarity และ Database" />
+            <figcaption><b>หลักการค้นคืนพื้นฐาน</b> — คำถาม → เวกเตอร์ → Cosine Similarity → ดึงข้อมูล Top-K → ประกอบเป็นคำตอบด้วย LLM</figcaption>
+          </figure>
+
+          <div class="callout gold" style="margin-top:16px;">
+            <h4>🔧 พารามิเตอร์จริงที่ใช้ในระบบ</h4>
+            <p>
+              <span class="badge-tech">TOP_K = 10</span> ชิ้นข้อมูลต่อการค้นหนึ่งครั้ง ·
+              <span class="badge-tech">MIN_SCORE = 0.35</span> คะแนนความคล้ายขั้นต่ำที่ยอมรับ ·
+              วัดความคล้ายด้วย <span class="badge-tech">Cosine Similarity</span> บน pgvector
+            </p>
+          </div>
+
+          <div class="callout info">
+            <h4>ℹ️ นี่เป็นเพียงหลักการพื้นฐาน</h4>
+            <p>
+              ระบบจริงของ OAE Chatbot ไม่ได้ค้นแบบตรงไปตรงมาเพียงขั้นตอนเดียว แต่เพิ่มเทคนิคอีก 4 ชั้นเพื่อยกระดับความแม่นยำ
+              และป้องกันการตอบข้อมูลเท็จ — อธิบายแบบละเอียดในหัวข้อถัดไป
+            </p>
+          </div>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="03-architecture.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">สถาปัตยกรรมระบบต้นแบบ</div>
+          </a>
+          <a class="pn-link next" href="05-techniques.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">เทคนิคขั้นสูงในระบบ</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 4 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

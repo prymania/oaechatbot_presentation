@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1. บริบทและปัญหา — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html" class="active"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 1 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 1 · บริบทและปัญหา</span>
+          <h1>ทำไมต้องมี AI Chatbot สำหรับเศรษฐกิจการเกษตร</h1>
+          <p class="lead">
+            ข้อมูลเศรษฐกิจการเกษตรของไทยกระจายอยู่ในเอกสารราชการหลายร้อยฉบับและหลายหน่วยงาน
+            ระบบต้นแบบนี้ถูกออกแบบมาให้เป็น "ผู้ช่วยค้นข้อมูล" ที่ตอบเป็นภาษาธรรมชาติ
+            แต่ยังคงอ้างอิงแหล่งที่มาได้ทุกคำตอบ
+          </p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">1.1</span>ปัญหาที่พบในการเข้าถึงข้อมูล</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>📚 ข้อมูลกระจัดกระจาย</h3>
+              <p>เอกสารงบประมาณ รายงานภาวะเศรษฐกิจรายจังหวัด ราคาสินค้า สภาพอากาศ และศัตรูพืช อยู่คนละแหล่ง คนละหน่วยงาน คนละรูปแบบไฟล์</p>
+            </div>
+            <div class="mini-card">
+              <h3>⏱️ ข้อมูลเปลี่ยนเร็วกว่าที่เอกสารตามทัน</h3>
+              <p>ราคาตลาด สภาพอากาศ และระดับน้ำ เปลี่ยนแปลงรายวัน ขณะที่รายงาน/เอกสารสรุปเป็นรอบเดือนหรือรอบปี</p>
+            </div>
+            <div class="mini-card">
+              <h3>🔍 ค้นหายาก ต้องมีความรู้เฉพาะทาง</h3>
+              <p>ผู้ใช้ทั่วไปไม่รู้ว่าคำตอบอยู่ในเอกสารฉบับไหน หน้าไหน ต้องเปิดอ่าน PDF หลายสิบหน้าเพื่อหาตัวเลขเดียว</p>
+            </div>
+            <div class="mini-card">
+              <h3>✅ ต้องการคำตอบที่ตรวจสอบย้อนกลับได้</h3>
+              <p>งานราชการต้องอ้างอิงแหล่งที่มาได้เสมอ — ตอบผิดหรือ "มั่ว" ไม่ได้ โดยเฉพาะตัวเลขงบประมาณและสถิติ</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">1.2</span>เป้าหมายของระบบต้นแบบ</h2>
+          <ul class="bullets">
+            <li><strong>ตอบคำถามด้วยภาษาธรรมชาติ</strong> — ผู้ใช้พิมพ์คำถามแบบพูดคุยทั่วไป ไม่ต้องรู้โครงสร้างเอกสาร</li>
+            <li><strong>อ้างอิงแหล่งที่มาทุกคำตอบ</strong> — ดึงข้อความจากเอกสารจริงของ สศก. และหน่วยงานที่เกี่ยวข้องเสมอ</li>
+            <li><strong>เชื่อมข้อมูลสดจากภายนอก</strong> — ราคาสินค้า (NABC) สภาพอากาศ (TMD) แหล่งน้ำ (RID/DWR) ศัตรูพืช (DOA)</li>
+            <li><strong>ครอบคลุม 9 โดเมนสินค้าเกษตรหลัก</strong> — ขยายเพิ่มโดเมนใหม่ได้โดยไม่ต้องแก้โค้ดระบบ</li>
+            <li><strong>ให้บริการหลายช่องทาง</strong> — เว็บแชท แอดมินแดชบอร์ด และ LINE Bot ที่เกษตรกรใช้อยู่แล้ว</li>
+          </ul>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">1.3</span>9 โดเมนสินค้าเกษตรที่ระบบครอบคลุม</h2>
+          <p class="sub">แต่ละโดเมนมีคลังความรู้แยกของตนเอง แบ่งย่อยตาม 5 มิติการตัดสินใจของเกษตรกร</p>
+          <div class="domain-grid">
+            <div class="domain-chip hub"><span class="emoji">📊</span><span class="th">ภาพรวม สศก.</span><span class="en">oae</span></div>
+            <div class="domain-chip"><span class="emoji">🌾</span><span class="th">ข้าว</span><span class="en">rice</span></div>
+            <div class="domain-chip"><span class="emoji">🌴</span><span class="th">ปาล์มน้ำมัน</span><span class="en">palm_oil</span></div>
+            <div class="domain-chip"><span class="emoji">🌳</span><span class="th">ทุเรียน</span><span class="en">durian</span></div>
+            <div class="domain-chip"><span class="emoji">🦐</span><span class="th">กุ้ง</span><span class="en">shrimp</span></div>
+            <div class="domain-chip"><span class="emoji">🐄</span><span class="th">โค</span><span class="en">cow</span></div>
+            <div class="domain-chip"><span class="emoji">🐂</span><span class="th">เนื้อโค</span><span class="en">beef</span></div>
+            <div class="domain-chip"><span class="emoji">🐷</span><span class="th">สุกร</span><span class="en">swine</span></div>
+            <div class="domain-chip"><span class="emoji">🐔</span><span class="th">ไก่</span><span class="en">chicken</span></div>
+          </div>
+
+          <p class="sub" style="margin-top:22px;">แต่ละโดเมนแบ่งย่อยตาม 5 มิติการตัดสินใจของเกษตรกร (หมวดหมู่คลังความรู้)</p>
+          <div class="flow">
+            <div class="flow-step"><div class="fnum">1</div><h4>การจัดการฟาร์ม</h4><p>แนวทางบริหารจัดการฟาร์มรายวัน</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">2</div><h4>ด้านการเงิน</h4><p>ต้นทุน เงินทุน สินเชื่อ</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">3</div><h4>ด้านการตลาด</h4><p>ราคา ช่องทางจำหน่าย</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">4</div><h4>ด้านการผลิต</h4><p>เทคนิคการผลิต ผลผลิต</p></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fnum">5</div><h4>ด้านความเสี่ยง</h4><p>โรค ภัยธรรมชาติ ความผันผวน</p></div>
+          </div>
+          <div class="callout info">
+            <h4>ℹ️ โครงสร้างแบบไดนามิก</h4>
+            <p>รายการโดเมนและหมวดหมู่ไม่ได้ฝังตายในโค้ด แต่เก็บในฐานข้อมูลและ "เรียนรู้" หมวดหมู่ใหม่จากเอกสารที่นำเข้าเพิ่มเติมได้ทันที</p>
+          </div>
+        </section>
+
+        <div class="prevnext">
+          <a class="pn-link" href="00-index.html">
+            <div class="pn-dir">← กลับหน้าแรก</div>
+            <div class="pn-title">ภาพรวมการนำเสนอ</div>
+          </a>
+          <a class="pn-link next" href="02-chatbot-vs-llm.html">
+            <div class="pn-dir">หัวข้อถัดไป →</div>
+            <div class="pn-title">Chatbot ทั่วไป vs LLM</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 1 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>

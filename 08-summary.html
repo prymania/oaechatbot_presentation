@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>8. สรุปและก้าวต่อไป — OAE Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+    <style>
+      .thanks {
+        background: linear-gradient(160deg, var(--gov-primary) 0%, var(--gov-primary-dk) 100%);
+        border-radius: 18px;
+        padding: clamp(30px, 5vw, 54px);
+        color: #eaf3ee;
+        text-align: center;
+        margin-top: 10px;
+      }
+      .thanks h2 { color: #fff; font-size: clamp(24px, 3vw, 32px); margin-bottom: 10px; }
+      .thanks p { color: #cfe4d9; font-size: 15px; max-width: 56ch; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar"></div>
+
+    <nav class="sidebar">
+      <a class="sidebar-brand" href="00-index.html">
+        <span class="brand-tag">ต้นแบบระบบ · สศก.</span>
+        <h1>OAE Chatbot</h1>
+        <p>Chatbot LLM + RAG สำหรับข้อมูลเศรษฐกิจการเกษตร</p>
+      </a>
+      <ul class="sidebar-nav">
+        <li><a href="01-problem.html"><span class="num">1</span><span class="label">บริบทและปัญหา<small>ทำไมต้องมี AI Chatbot</small></span></a></li>
+        <li><a href="02-chatbot-vs-llm.html"><span class="num">2</span><span class="label">Chatbot ทั่วไป vs LLM<small>ต่างกันตรงไหน</small></span></a></li>
+        <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
+        <li><a href="04-rag-pipeline.html"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
+        <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
+        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
+        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="08-summary.html" class="active"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+      </ul>
+      <div class="sidebar-foot">หัวข้อที่ 8 จาก 8</div>
+    </nav>
+
+    <main class="main">
+      <div class="page">
+        <div class="page-head">
+          <span class="kicker">หัวข้อที่ 8 · บทสรุป</span>
+          <h1>สรุปประเด็นสำคัญ และก้าวต่อไปของระบบ</h1>
+          <p class="lead">ทบทวนใจความหลักของการนำเสนอ ก่อนเปิดเวทีถาม-ตอบ</p>
+        </div>
+
+        <section class="block">
+          <h2><span class="h2num">8.1</span>ประเด็นสำคัญที่ควรจำ (Key Takeaways)</h2>
+          <ul class="bullets">
+            <li><strong>Chatbot ทั่วไป</strong> ตอบได้เฉพาะสิ่งที่เขียนสคริปต์ไว้ล่วงหน้า ส่วน <strong>LLM</strong> เข้าใจภาษาธรรมชาติได้ยืดหยุ่นกว่ามาก แต่มีความเสี่ยง Hallucination หากใช้ตามลำพัง</li>
+            <li><strong>RAG คือสะพานเชื่อม</strong> LLM เข้ากับคลังความรู้จริงของหน่วยงาน ทำให้คำตอบทุกข้ออ้างอิงเอกสารต้นฉบับที่ตรวจสอบย้อนกลับได้</li>
+            <li>ระบบไม่ได้หยุดแค่ RAG พื้นฐาน แต่เพิ่ม <strong>Query Expansion · Reranking · Coverage Gating · Tool-Calling</strong> เพื่อความแม่นยำและความปลอดภัยของคำตอบ</li>
+            <li><strong>ผลประเมิน 88%</strong> ความแม่นยำ และผ่านทุกกรณีทดสอบ "ปฏิเสธตอบ" เมื่อไม่มีข้อมูลรองรับ — ยืนยันว่ากลไกป้องกัน Hallucination ทำงานได้จริงในทางปฏิบัติ</li>
+            <li>ระบบพร้อมให้บริการผ่าน <strong>3 ช่องทาง</strong> (Web · LINE · Admin) ครอบคลุม <strong>9 โดเมนสินค้าเกษตรหลัก</strong> และขยายเพิ่มได้โดยไม่ต้องแก้โค้ด</li>
+          </ul>
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">8.2</span>แนวทางพัฒนาต่อ</h2>
+          <div class="grid-2">
+            <div class="mini-card">
+              <h3>🎯 ยกระดับความแม่นยำ</h3>
+              <ul>
+                <li>ทดลองเพิ่ม Cross-Encoder Reranker เสริมจาก recency/authority bonus ปัจจุบัน</li>
+                <li>ตรวจทานตัวเลขที่ยัง "pending human verify" ให้ครบทุกรายการ</li>
+                <li>เก็บ Feedback ผู้ใช้จริงเพื่อปรับ threshold ของ Coverage Gating</li>
+              </ul>
+            </div>
+            <div class="mini-card">
+              <h3>📈 ขยายขอบเขตระบบ</h3>
+              <ul>
+                <li>เพิ่มโดเมนสินค้าเกษตรใหม่ตามความต้องการหน่วยงาน</li>
+                <li>พิจารณา Qdrant สำหรับ use case ที่ต้องการ latency ต่ำมากเป็นพิเศษ</li>
+                <li>ขยายจำนวนแหล่งข้อมูลสด (Live API) ให้ครอบคลุมมากขึ้น</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <div class="thanks">
+          <h2>ขอบคุณค่ะ</h2>
+          <p>เปิดรับข้อเสนอแนะและคำถามเกี่ยวกับระบบต้นแบบ OAE Chatbot — ยินดีสาธิตการใช้งานจริงเพิ่มเติมหากต้องการ</p>
+        </div>
+
+        <div class="prevnext">
+          <a class="pn-link" href="07-deployment.html">
+            <div class="pn-dir">← หัวข้อก่อนหน้า</div>
+            <div class="pn-title">การใช้งานจริงและ Deployment</div>
+          </a>
+          <a class="pn-link next" href="00-index.html">
+            <div class="pn-dir">กลับสู่ →</div>
+            <div class="pn-title">หน้าแรก / ภาพรวมการนำเสนอ</div>
+          </a>
+        </div>
+        <div class="progress-lbl">ตอนที่ 8 / 8</div>
+      </div>
+    </main>
+  </body>
+</html>
