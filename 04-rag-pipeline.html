@@ -27,9 +27,8 @@
         <li><a href="03-architecture.html"><span class="num">3</span><span class="label">สถาปัตยกรรมระบบ<small>ภาพรวมทั้งระบบ</small></span></a></li>
         <li><a href="04-rag-pipeline.html" class="active"><span class="num">4</span><span class="label">RAG Pipeline เจาะลึก<small>จากเอกสารสู่คำตอบ</small></span></a></li>
         <li><a href="05-techniques.html"><span class="num">5</span><span class="label">เทคนิคขั้นสูง<small>ความแม่นยำ &amp; กันหลอน</small></span></a></li>
-        <li><a href="06-evaluation.html"><span class="num">6</span><span class="label">ผลการประเมิน<small>Benchmark &amp; ความแม่นยำ</small></span></a></li>
-        <li><a href="07-deployment.html"><span class="num">7</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
-        <li><a href="08-summary.html"><span class="num">8</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
+        <li><a href="06-deployment.html"><span class="num">6</span><span class="label">การใช้งานจริง<small>ช่องทาง &amp; Deployment</small></span></a></li>
+        <li><a href="07-summary.html"><span class="num">7</span><span class="label">สรุปและก้าวต่อไป<small>Key Takeaways</small></span></a></li>
       </ul>
       <div class="sidebar-foot">หัวข้อที่ 4 จาก 8</div>
     </nav>
@@ -85,13 +84,78 @@
             </p>
           </div>
 
-          <div class="callout info">
-            <h4>ℹ️ นี่เป็นเพียงหลักการพื้นฐาน</h4>
-            <p>
-              ระบบจริงของ OAE Chatbot ไม่ได้ค้นแบบตรงไปตรงมาเพียงขั้นตอนเดียว แต่เพิ่มเทคนิคอีก 4 ชั้นเพื่อยกระดับความแม่นยำ
-              และป้องกันการตอบข้อมูลเท็จ — อธิบายแบบละเอียดในหัวข้อถัดไป
-            </p>
+
+        </section>
+
+        <section class="block">
+          <h2><span class="h2num">4.3</span>เลือก Vector Database จากการทดสอบ</h2>
+          <p class="sub">ทดสอบบนข้อมูลจริง 24,811 chunks จาก 5 โดเมน เวกเตอร์ 1024 มิติ (bge-m3) เปรียบเทียบ 4 ตัวเลือก</p>
+          <div style="overflow-x:auto;">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>ฐานข้อมูล</th>
+                  <th>Recall@10</th>
+                  <th>p50 (ms)</th>
+                  <th>p95 (ms)</th>
+                  <th>QPS</th>
+                  <th>Index Time (s)</th>
+                  <th>Disk (MB)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="win">
+                  <td>pgvector — HNSW <em>(ที่เลือกใช้จริง)</em></td>
+                  <td>0.999</td>
+                  <td>14.1</td>
+                  <td>25.0</td>
+                  <td>819</td>
+                  <td>103.3</td>
+                  <td>519</td>
+                </tr>
+                <tr>
+                  <td>pgvector — IVFFlat</td>
+                  <td>0.989</td>
+                  <td>12.4</td>
+                  <td>25.2</td>
+                  <td>721</td>
+                  <td>35.5</td>
+                  <td>790</td>
+                </tr>
+                <tr>
+                  <td>Qdrant (gRPC)</td>
+                  <td>0.998</td>
+                  <td>4.6</td>
+                  <td>5.8</td>
+                  <td>549</td>
+                  <td>13.0</td>
+                  <td>163</td>
+                </tr>
+                <tr>
+                  <td>ChromaDB</td>
+                  <td>0.996</td>
+                  <td>69.4</td>
+                  <td>78.7</td>
+                  <td>97</td>
+                  <td>28.9</td>
+                  <td>108</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
+          <div class="callout ok" style="margin-top:16px;">
+            <h4>✅ เหตุผลที่เลือก pgvector + HNSW</h4>
+            <p>ให้ค่า Recall@10 และ QPS (จำนวนคำขอต่อวินาที) สูงสุดในกลุ่ม และใช้ Postgres ตัวเดียวกับที่ระบบมีอยู่แล้ว —
+              ไม่ต้องเพิ่มบริการใหม่ให้ดูแล แม้ Qdrant จะตอบเร็วกว่าต่อคำขอ (latency ต่ำกว่า ~4 เท่า)
+              แต่ต้องแลกกับความซับซ้อนในการดูแลระบบเพิ่ม</p>
+          </div>
+                    <div class="callout info">
+                      <h4>ℹ️ นี่เป็นเพียงหลักการพื้นฐาน</h4>
+                      <p>
+                        ระบบจริงของ OAE Chatbot ไม่ได้ค้นแบบตรงไปตรงมาเพียงขั้นตอนเดียว แต่เพิ่มเทคนิคอีก 4 ชั้นเพื่อยกระดับความแม่นยำ
+                        และป้องกันการตอบข้อมูลเท็จ — อธิบายแบบละเอียดในหัวข้อถัดไป
+                      </p>
+                    </div>
         </section>
 
         <div class="prevnext">
