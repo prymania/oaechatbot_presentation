@@ -400,6 +400,14 @@ ol.bullets li strong {
   display: block;
   margin-bottom: 6px;
 }
+.domain-chip .durian-icon {
+  display: block;
+  width: 30px;
+  height: 30px;
+  aspect-ratio: 1;
+  object-fit: contain;
+  margin: 0 auto 8px;
+}
 .domain-chip .th {
   font-weight: 700;
   font-size: 14px;
