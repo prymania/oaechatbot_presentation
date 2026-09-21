@@ -52,12 +52,12 @@
             <div class="flow-arrow">→</div>
             <div class="flow-step"><div class="fnum">2</div><h4>Domain Router</h4><p>จัดคำถามเข้า 1 ใน 9 โดเมนสินค้าเกษตร</p></div>
             <div class="flow-arrow">→</div>
-            <div class="flow-step"><div class="fnum">3</div><h4>Query Expansion</h4><p>แตกคำถาม 1 ข้อ เป็น 3 มุม (ต้นฉบับ + 2 คำถามย่อยที่โฟกัสกว่า)</p></div>
+            <div class="flow-step"><div class="fnum">3</div><h4>Query Expansion</h4><p>แตกคำถาม 1 ข้อ เป็น 3 มุมมอง (ต้นฉบับ + 2 คำถามย่อยที่โฟกัสแคบลง)</p></div>
           </div>
 
           <p class="sub" style="margin-top:22px;">ค้นข้อมูล ประเมินความมั่นใจ และประกอบคำตอบ</p>
           <div class="flow">
-            <div class="flow-step"><div class="fnum">4</div><h4>Parallel Retrieval</h4><p>ค้น pgvector แบบขนาน<span class="tag">Top-10 × 3 มุม</span></p></div>
+            <div class="flow-step"><div class="fnum">4</div><h4>Parallel Retrieval</h4><p>ค้น pgvector แบบขนาน<span class="tag">Top-10 × 3 มุมมอง</span></p></div>
             <div class="flow-arrow">→</div>
             <div class="flow-step"><div class="fnum">5</div><h4>Rerank</h4><p>ให้คะแนนเพิ่มตามความใหม่และความน่าเชื่อถือของแหล่งที่มา</p></div>
             <div class="flow-arrow">→</div>
